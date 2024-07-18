@@ -34,8 +34,6 @@ public class CardDrager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     Vector2 deadPosition = new(-340.0f,-160.0f);
 
-    bool m_isInit = false;
-
     bool m_isMovable = false;
 
 
@@ -49,15 +47,6 @@ public class CardDrager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     {
         return m_isMovable;
     }
-
-
-    /// <summary>
-    /// 値のリセット
-    /// </summary>
-    //public void Reset()
-    //{
-    //    m_isInit = false;
-    //}
 
     public void SetRectTransform(Vector2 position)
     {
@@ -96,7 +85,6 @@ public class CardDrager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     {
         m_canvas = canvas;
         myBaseObject = baseObject;
-        m_isInit = true;
     }
 
     /// <summary>
