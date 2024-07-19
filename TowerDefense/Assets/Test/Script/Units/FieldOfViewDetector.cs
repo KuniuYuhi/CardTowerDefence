@@ -27,6 +27,11 @@ public class FieldOfViewDetector : MonoBehaviour
         return m_targetObject;
     }
 
+    public void SetTargetGameObject(GameObject targetObject)
+    {
+        m_targetObject = targetObject;
+    }
+
     /// <summary>
     /// 検出したいレイヤーを取得
     /// </summary>
@@ -58,6 +63,8 @@ public class FieldOfViewDetector : MonoBehaviour
         //狙いのオブジェクトがなくならないうちはオブジェクトを探さない
         if(m_targetObject!=null)
         {
+            //todo より近い敵がいないかぎり探さない
+
             return;
         }
 

@@ -38,6 +38,11 @@ public class CharacterControll : MonoBehaviour
     }
 
 
+    public void SetTargetObject(GameObject targetObject)
+    {
+        m_fieldOfViewDetector.SetTargetGameObject(targetObject);
+    }
+
     public GameObject GetTargetObject()
     {
         return m_targetObject;
