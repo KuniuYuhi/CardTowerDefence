@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
+
 
 /// <summary>
 /// デッキを管理するマネージャー
@@ -49,8 +51,17 @@ public class DeckManager : MonoBehaviour
 
     int m_oldSelectCardId = -1;
 
-    bool m_isCardDetailActive = false;
+    bool m_isCardDetailActive = false;          //カードの詳細オブジェクトがアクティブ化か
 
+    bool m_isSetUpHand = false;                 //手札のセットアップができたか
+
+
+
+
+    public bool GetSetUpHandFlag()
+    {
+        return m_isSetUpHand;
+    }
 
     /// <summary>
     /// カードの詳細オブジェクトを取得
@@ -110,7 +121,7 @@ public class DeckManager : MonoBehaviour
     /// <summary>
     /// 最初のデッキの諸々の設定
     /// </summary>
-    void StartDeckAndCardSetting()
+    public void StartDeckAndCardSetting()
     {
         //デッキのカードにIDと親オブジェクトを設定していく
         foreach(var card in m_runtimeDeck.cardPrefabsList)
@@ -129,8 +140,13 @@ public class DeckManager : MonoBehaviour
         DeckListShuffle();
         //デッキの最大枚数を取得
         m_maxCardCount = m_deckCardList.Count;
+
+        //これは別でもいい
+        //ここをうまく管理して一枚ずつカードを引く
         //画面下に初期手札の数分カードを設置
         DrawCardFromDeck(m_initialHandCount);
+
+
     }
 
 
@@ -235,7 +251,7 @@ public class DeckManager : MonoBehaviour
         m_cardDetail.gameObject.SetActive(m_isCardDetailActive);
 
         //最初のカードのセッティング
-        StartDeckAndCardSetting();
+        //StartDeckAndCardSetting();
 
     }
 
@@ -270,6 +286,8 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     void ReclaimCardFromGraveyard()
     {
+        //墓地から回収できなかったら
+
         foreach(var graveyardCard in m_graveyardCardList)
         {
             //非アクティブ化されているなら
@@ -298,7 +316,7 @@ public class DeckManager : MonoBehaviour
     /// デッキからカードを引いて手札に加える
     /// </summary>
     /// <param name="drawAmount">カードを引く枚数。デフォルトは1枚</param>
-    void DrawCardFromDeck(int drawAmount = 1)
+    public void DrawCardFromDeck(int drawAmount = 1)
     {
         //デッキにカードが残ってなかったら墓地からカードをデッキに回収
         if (m_deckCardList.Count == 0)
@@ -309,6 +327,12 @@ public class DeckManager : MonoBehaviour
 
         for (int i = 0; i < drawAmount; i++)
         {
+            if(m_deckCardList.Count== 0)
+            {
+                Debug.Log("墓地からカードを回収");
+                ReclaimCardFromGraveyard();
+            }
+
             //デッキリストから手札リストにカードを加える
             m_handCardList.Add(m_deckCardList[0]);
             //手札にカードが渡ったので、デッキリストから同じカードを削除
@@ -317,16 +341,11 @@ public class DeckManager : MonoBehaviour
             GameObject cardInstance = m_handCardList[m_handCardList.Count - 1];
 
             //手札のカードの親オブジェクトを変更
-            cardInstance.transform.SetParent(handArea.transform, false);
-
+            cardInstance.transform.SetParent(handArea.transform, true);
             //生成したカードとデッキのカードのCardBaseコンポーネントを取得
             CardBase cardBase = cardInstance.GetComponent<CardBase>();
             //カードドラッガーの初期化処理を実行
             cardBase.GetCardDrager().Init(canvas, m_myBaseObject);
-
-            //手札に入ったので、カードを動かせるようにする
-            cardBase.GetCardDrager().SetMovableFlag(true);
-
         }
 
         //手札エリアにカードを配置
@@ -337,27 +356,47 @@ public class DeckManager : MonoBehaviour
     /// <summary>
     /// カードを手札エリアに配置する
     /// </summary>
-    void PlaceCardInHand()
+    async void PlaceCardInHand()
     {
+        m_isSetUpHand = false;
+
         //手札エリアの幅を手札の枚数で割ってカードの間隔を計算
         float distance = handArea.rect.width / m_handCardList.Count;
         //手札エリアの半分の幅　―　カードの間隔/2で最初のカードの開始位置を計算
         float startPosX = (handArea.rect.width / 2.0f) - (distance / 2.0f);
-
         float subDistance = 0.0f;
+
         foreach (var card in m_handCardList)
         {
             CardBase cardBase = card.GetComponent<CardBase>();
-            //カードの位置をリセット
-            cardBase.GetCardDrager().SetRectTransform(Vector2.zero);
-            //カードを等間隔に配置
-            cardBase.GetCardDrager().SumRectTransform(new Vector2(subDistance - startPosX, 0.0f));
 
-            cardBase.GetCardDrager().ChangeHandPositionToNowPosition();
+
+            ///
+            //直接移動させるなら
+            //cardBase.GetCardDrager().SetRectTransform(Vector2.zero);
+            //cardBase.GetCardDrager().SumRectTransform(new Vector2(subDistance - startPosX, 0.0f));
+            ///
+
+            //カードを手札の定位置に移動させる
+            cardBase.GetCardDrager().MoveCard(new Vector2(subDistance - startPosX, 0.0f));
+          
+            //手札での初期位置をカードの到達地点の座標に設定
+            cardBase.GetCardDrager().ChangeHandPositionToNowPosition(new Vector2(subDistance - startPosX, 0.0f));
+
+            //手札に入ったので、カードを動かせるようにする
+            cardBase.GetCardDrager().SetMovableFlag(true);
 
             //次のカードの距離にする
             subDistance += distance;
+
+            //一秒待ってループ再開
+            await Task.Delay(100);
+
         }
+
+        //手札にカードを設置完了
+        m_isSetUpHand = true;
+
     }
 
 
