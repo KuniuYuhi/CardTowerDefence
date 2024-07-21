@@ -24,14 +24,30 @@ public class GameStartUI : MonoBehaviour
    /// </summary>
     public void ActiveGameStartPanel()
     {
+
+        DeckOpen();
+
+        //while(true)
+        //{
+        //    if(DeckManager.instance.GetSetUpHandFlag())
+        //    {
+        //        //各UIをアクティブ化する
+        //        m_gameStartPanel.SetActive(true);
+        //        break;
+        //    }
+        //}
+
         //各UIをアクティブ化する
         m_gameStartPanel.SetActive(true);
+
+
         //コルーチン
         StartCoroutine(PanelViewTimer());
     }
 
     IEnumerator PanelViewTimer()
     {
+        //ある程度待つ
         yield return new WaitForSeconds(m_viewTimer);
 
         //ゲームマネージャーにシーンを切り替えてもいい合図を送る
@@ -39,6 +55,17 @@ public class GameStartUI : MonoBehaviour
 
         //パネルを非アクティブ化する
         m_gameStartPanel.SetActive(false);
+    }
+
+
+    void DeckOpen()
+    {
+        //デッキを画面にセット
+        DeckManager.instance.StartDeckAndCardSetting();
+
+
+        //カードの配置が終わったらゲームスタートを表示する
+
     }
 
 }
