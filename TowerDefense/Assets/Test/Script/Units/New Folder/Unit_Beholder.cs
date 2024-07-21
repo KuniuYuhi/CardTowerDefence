@@ -38,6 +38,9 @@ public class Unit_Beholder : UnitBase
         //魔法発射地点からマジックボールを生成
         GameObject spell = Instantiate(SpellPrefab, m_castPoint.position, m_castPoint.rotation);
         MagicBall magicBall = spell.GetComponent<MagicBall>();
+
+        if (magicBall == null) return;
+
         //マジックボール生成時の初期化処理
         magicBall.Init(
             GetCharacterController().GetTargetObject().transform.position,
