@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+using DG.Tweening;
+
 public class CardDrager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     [SerializeField,Header("カードデータ")]
@@ -96,12 +98,18 @@ public class CardDrager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         startPosition = position;
     }
     /// <summary>
-    /// 手札の座標を現在の座標に切り替える
+    /// 手札での自分定位置を切り替える
     /// </summary>
     public void ChangeHandPositionToNowPosition()
     {
         m_handPosition = rectTransform.anchoredPosition;
     }
+    public void ChangeHandPositionToNowPosition(Vector2 position)
+    {
+        m_handPosition = position;
+    }
+
+
     /// <summary>
     /// カードを手札の初期位置に戻す
     /// </summary>
@@ -232,7 +240,9 @@ public class CardDrager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         }
     }
 
-
+    /// <summary>
+    /// カードオブジェクトを生成
+    /// </summary>
     void CreateCardObject()
     {
         // カードの中心からレイを作成
@@ -265,5 +275,15 @@ public class CardDrager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
             rectTransform.anchoredPosition = startPosition;
         }
     }
+
+
+
+    public void MoveCard(Vector2 endPosiiton)
+    {
+        //rectTransform.DOMove(endPosiiton, 1.0f);
+
+        rectTransform.DOAnchorPos(endPosiiton, 1.0f);
+    }
+
 
 }
