@@ -15,7 +15,8 @@ public class InGameUiManager : MonoBehaviour
     GameStartUI m_gameStartUI;
     GameResultUI m_gameResultUI;
 
-
+    [SerializeField,Header("ÉJÅ[ÉhÇ…ä÷Ç∑ÇÈUI")]
+    GameObject m_CardFieldUI;
 
 
     void SetUp()
@@ -68,6 +69,16 @@ public class InGameUiManager : MonoBehaviour
     public void ActiveGameStartPanel()
     {
         m_gameStartUI.ActiveGameStartPanel();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="flag"></param>
+    public void SetCardFieldPanelActive(bool flag)
+    {
+        if (m_CardFieldUI == null) return;
+        m_CardFieldUI.SetActive(flag);
     }
 
 }
