@@ -41,6 +41,5 @@ public enum En_UnitState
     enUnitState_Idle,                   //‘Ò‹@ó‘Ô
     enUnitState_Walk,                   //•à‚«ó‘Ô
     enUnitState_normalAttack,           //’ÊíUŒ‚ó‘Ô
-    enUnitState_SkillAttack,            //ƒXƒLƒ‹UŒ‚ó‘Ô
     enUnitState_Die,                    //€–Só‘Ô
 }

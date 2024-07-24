@@ -31,7 +31,6 @@ public class UnitStateContext
             { En_UnitState.enUnitState_Idle, new UnitState_Idle(unit) },
             { En_UnitState.enUnitState_Walk, new UnitState_Walk(unit) },
             { En_UnitState.enUnitState_normalAttack, new UnitState_NomalAttack(unit) },
-            { En_UnitState.enUnitState_SkillAttack, new UnitState_SkillAttack(unit) },
             { En_UnitState.enUnitState_Die, new UnitState_Die(unit) },
         };
         //ƒe[ƒuƒ‹‚ğİ’è
