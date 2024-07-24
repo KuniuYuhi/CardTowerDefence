@@ -130,13 +130,6 @@ public class UnitBase : SpawnableBase, IUnit,IDamageable
     {
         //UŒ‚—Í‚Í’ÊíUŒ‚‚ÌUŒ‚—Í
         int atk = m_runtimeStatus.GetNormalAttack();
-        //ƒXƒe[ƒg‚ªƒXƒLƒ‹UŒ‚‚È‚ç‚ÎAUŒ‚—Í‚ðƒXƒLƒ‹UŒ‚—Í‚É•ÏX
-        if (m_pawnStateContext.GetCurrentUnitState().GetUnitState() == 
-            En_UnitState.enUnitState_SkillAttack)
-        {
-            atk = m_runtimeStatus.GetSkillAttack();
-        }
-
         //•t‰ÁUŒ‚—Í‚ð‘«‚·
         atk += m_addAttackPower;
 
@@ -252,9 +245,6 @@ public class UnitBase : SpawnableBase, IUnit,IDamageable
         //UŒ‚’†‚Íˆ—‚µ‚È‚¢
         if (m_isAttackActive) return false;
 
-        //ƒXƒLƒ‹UŒ‚‚ª‚Å‚«‚éó‘Ô‚È‚ç
-        if(DecideSkillAttack()) return true;
-
         //’ÊíUŒ‚‚ª‚Å‚«‚éó‘Ô‚È‚ç
         if (DecideNormalAttack()) return true;
         
@@ -275,20 +265,6 @@ public class UnitBase : SpawnableBase, IUnit,IDamageable
 
         return false;
     }
-
-    protected bool DecideSkillAttack()
-    {
-        //ƒXƒLƒ‹UŒ‚‚ª‚Å‚«‚éó‘Ô‚È‚ç
-        if (m_attackTimer.IsSkillAttackable())
-        {
-            m_skillAttackAction = true;
-            ChangeStateSkillAttack();
-            return true;
-        }
-
-        return false;
-    }
-
 
     public void MoveTo()
     {
@@ -354,10 +330,6 @@ public class UnitBase : SpawnableBase, IUnit,IDamageable
     //’ÊíUŒ‚ó‘Ô‚ÉØ‚è‘Ö‚¦
     public void ChangeStateNormalAttack() =>
         m_pawnStateContext.ChangeState(En_UnitState.enUnitState_normalAttack);
-
-    //ƒXƒLƒ‹UŒ‚ó‘Ô‚ÉØ‚è‘Ö‚¦
-    public void ChangeStateSkillAttack() =>
-        m_pawnStateContext.ChangeState(En_UnitState.enUnitState_SkillAttack);
 
     //Ž€–Só‘Ô‚ÉØ‚è‘Ö‚¦
     public void ChangeStateDie() =>
