@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Data/StatusData_Character")]
+[CreateAssetMenu(menuName = "Data/StatusData_Unit")]
 public class Status_Character : ScriptableObject
 {
     
@@ -13,10 +13,6 @@ public class Status_Character : ScriptableObject
     [SerializeField, Header("’ÊíUŒ‚—Í")]
     int normalAttack;
     int defaultNormalAttack;        //Šî‘b’ÊíUŒ‚—Í
-
-    [SerializeField, Header("ƒXƒLƒ‹UŒ‚—Í")]
-    int skillAttack;
-    int defaultSkillAttack;         //Šî‘bƒXƒLƒ‹UŒ‚—Í
 
     [SerializeField, Header("ˆÚ“®‘¬“x")]
     float speed;
@@ -29,9 +25,6 @@ public class Status_Character : ScriptableObject
 
     [SerializeField,Header("õ“G”ÍˆÍ")]
     float searchRange;
-
-    [SerializeField, Header("‹–ìŠp")]
-    float fieldOfViewAngle;
 
     [SerializeField, Header("UŒ‚‰Â”\”ÍˆÍ“à")]
     float attackRange;
@@ -46,7 +39,6 @@ public class Status_Character : ScriptableObject
     {
         maxHp = hp;
         defaultNormalAttack = normalAttack;
-        defaultSkillAttack = skillAttack;
     }
 
     public int GetHp()
@@ -69,16 +61,6 @@ public class Status_Character : ScriptableObject
         return defaultNormalAttack;
     }
 
-    public int GetSkillAttack()
-    {
-        return skillAttack;
-    }
-
-    public int GetDefaultSkillAttack()
-    {
-        return defaultSkillAttack;
-    }
-
     public float GetSpeed()
     {
         return speed;
@@ -98,11 +80,6 @@ public class Status_Character : ScriptableObject
     public float GetSearchRange()
     {
         return searchRange;
-    }
-
-    public float GetFieldOfViewAngle()
-    {
-        return fieldOfViewAngle;
     }
 
     public float GetAttackRange()
