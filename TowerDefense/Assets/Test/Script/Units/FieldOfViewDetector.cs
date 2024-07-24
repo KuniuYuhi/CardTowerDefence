@@ -8,7 +8,6 @@ public class FieldOfViewDetector : MonoBehaviour
     LayerMask m_detectionLayer;
 
     float m_detectionRange;         //索敵範囲
-    float m_fieldOfViewAngle;       //視野角
 
     GameObject m_targetObject;      //見つけたオブジェクト
 
@@ -47,13 +46,11 @@ public class FieldOfViewDetector : MonoBehaviour
     {
         m_targetObject = null;
 
-        UnitBase pawnBase = GetComponent<UnitBase>();
+        UnitBase unitBase = GetComponent<UnitBase>();
 
-        m_detectionRange = pawnBase.GetRuntimeStatus().GetSearchRange();
+        m_detectionRange = unitBase.GetRuntimeStatus().GetSearchRange();
 
-        m_fieldOfViewAngle = pawnBase.GetRuntimeStatus().GetFieldOfViewAngle();
-
-
+        
         m_timer = 1.0f;
     }
 
@@ -71,7 +68,7 @@ public class FieldOfViewDetector : MonoBehaviour
         //インターバルに達したらオブジェクトを探す
         if(IsFindIntarval())
         {
-            FindHitObjectInFieldOfView(m_detectionRange, m_fieldOfViewAngle);
+            FindHitObjectInFieldOfView(m_detectionRange);
         }
 
     }
@@ -89,7 +86,7 @@ public class FieldOfViewDetector : MonoBehaviour
         return false;
     }
 
-    GameObject FindHitObjectInFieldOfView(float range, float fOVAngle)
+    GameObject FindHitObjectInFieldOfView(float range)
     {
         //範囲内でヒットした特定のレイヤーを持つコライダーを格納する
         Collider[] hitColliders = Physics.OverlapSphere(
@@ -106,20 +103,16 @@ public class FieldOfViewDetector : MonoBehaviour
 
             //コライダーから自身の座標までのベクトルを求める
             Vector3 directionToTarget = hitCollider.transform.position - transform.position;
-            //前方向からベクトルに向かう角度を求める
-            float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
-            //求めた角度が設定した視野角内なら
-            if (angleToTarget <= fOVAngle / 2)
+           
+            //ヒットしたコライダー同士を比べて自身から一番近いコライダーを探す
+            float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
+            //前の一番近いコライダーとの距離より短かったら
+            if (distance < closestDistance)
             {
-                //ヒットしたコライダー同士を比べて自身から一番近いコライダーを探す
-                float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
-                if (distance < closestDistance)
-                {
-                    //距離の更新
-                    closestDistance = distance;
-                    //コライダーからオブジェクト情報を取得
-                    closestObject = hitCollider.gameObject;
-                }
+                //距離の更新
+                closestDistance = distance;
+                //コライダーからオブジェクト情報を取得
+                closestObject = hitCollider.gameObject;
             }
         }
 
@@ -135,12 +128,5 @@ public class FieldOfViewDetector : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, m_detectionRange);
-
-        Vector3 leftBoundary = Quaternion.Euler(0, -m_fieldOfViewAngle / 2, 0) * transform.forward * m_detectionRange;
-        Vector3 rightBoundary = Quaternion.Euler(0, m_fieldOfViewAngle / 2, 0) * transform.forward * m_detectionRange;
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
-        Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
     }
 }
