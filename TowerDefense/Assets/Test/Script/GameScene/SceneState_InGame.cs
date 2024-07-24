@@ -50,7 +50,8 @@ public class SceneState_InGame : MonoBehaviour, IGameSceneState
 
     public void Exit()
     {
-
+        //ƒCƒ“ƒQ[ƒ€‚ÉŠÖ‚·‚éUI‚ğíœ‚·‚é
+        InGameUiManager.Instance.SetCardFieldPanelActive(false);
     }
 
 }
