@@ -7,7 +7,7 @@ public class Unit_Breaker : UnitBase
     [SerializeField, Header("範囲攻撃の中心")]
     Transform m_skillAttackTRS;
 
-    [SerializeField, Header("スキルでダメージを与える範囲")]
+    [SerializeField, Header("ダメージを与える範囲")]
     float m_skillHitRange;
 
     FieldOfViewDetector m_fieldOfViewDetector;
@@ -43,12 +43,6 @@ public class Unit_Breaker : UnitBase
         m_animator.SetFloat("RunSpeed", GetCharacterController().GetWalkAnimationBlendSpeed());
 
         m_animator.SetBool("IsMove", GetCharacterController().GetIsMove());
-
-        if (m_skillAttackAction)
-        {
-            m_animator.SetTrigger("SkillAttack");
-            m_skillAttackAction = false;
-        }
 
         if (m_normalAttackAction)
         {

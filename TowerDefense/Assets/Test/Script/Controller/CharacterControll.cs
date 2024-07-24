@@ -243,8 +243,8 @@ public class CharacterControll : MonoBehaviour
             Vector3 direction = (m_targetObject.transform.position - transform.position).normalized;
             Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
 
-            // ゆっくりターゲットの方を向く
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
+            //ターゲットのほうに回転
+            transform.rotation = lookRotation;
 
             // エージェントの速度がゼロであることを確認
             if (m_navMeshAgent.velocity.sqrMagnitude == 0f)

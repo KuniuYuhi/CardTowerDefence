@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class HealingCircle : MagicBase
 {
-    [SerializeField, Header("回復力")]
-    int m_healAmount;
-
-    [SerializeField, Header("回復範囲")]
-    float m_range;
-
     [SerializeField, Header("回復対象のレイヤー")]
     LayerMask m_healLayers;
+
+    int m_healAmount;
+    float m_radius;
+
 
     protected override void Awake()
     {
         base.Awake();
+        //ステータスから回復力と半径を取得
+        m_healAmount = (int)GetRuntimeStatus().GetKeyValuePairs().GetValueOrDefault("回復力");
+        m_radius = GetRuntimeStatus().GetKeyValuePairs().GetValueOrDefault("半径");
     }
 
     // Start is called before the first frame update
@@ -34,7 +35,7 @@ public class HealingCircle : MagicBase
     {
         //範囲内でヒットした特定のレイヤーを持つコライダーを格納する
         Collider[] hitColliders = Physics.OverlapSphere(
-            transform.position, m_range, m_healLayers
+            transform.position, m_radius, m_healLayers
             );
 
         foreach (var hitCollider in hitColliders)

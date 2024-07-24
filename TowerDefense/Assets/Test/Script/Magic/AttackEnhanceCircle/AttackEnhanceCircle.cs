@@ -4,22 +4,21 @@ using UnityEngine;
 
 public class AttackEnhanceCircle : MagicBase
 {
-    [SerializeField, Header("付加攻撃力")]
-    int m_additiveAttack;
-
-    [SerializeField, Header("効果範囲")]
-    float m_range;
-
     [SerializeField, Header("効果対象のレイヤー")]
     LayerMask m_additiveAttackLayers;
 
-    [SerializeField, Header("効果持続時間")]
-    float boostDuration=10.0f;
+    int m_additiveAttack;
+    float m_radius;
+    float m_boostDuration;
 
 
     protected override void Awake()
     {
         base.Awake();
+        //ステータスから付加攻撃力と半径と効果継続時間を取得
+        m_additiveAttack = (int)GetRuntimeStatus().GetKeyValuePairs().GetValueOrDefault("付加攻撃力");
+        m_radius = GetRuntimeStatus().GetKeyValuePairs().GetValueOrDefault("半径");
+        m_boostDuration = GetRuntimeStatus().GetKeyValuePairs().GetValueOrDefault("効果持続時間");
     }
 
 
@@ -38,7 +37,7 @@ public class AttackEnhanceCircle : MagicBase
     {
         //範囲内でヒットした特定のレイヤーを持つコライダーを格納する
         Collider[] hitColliders = Physics.OverlapSphere(
-            transform.position, m_range, m_additiveAttackLayers
+            transform.position, m_radius, m_additiveAttackLayers
             );
 
         //ヒットしたコライダーに攻撃力を増加させるコンポーネントを追加する
@@ -50,9 +49,17 @@ public class AttackEnhanceCircle : MagicBase
             //ユニットにバフコンポーネントを追加
             AttackBuffEffect attackBuff = unitBase.gameObject.AddComponent<AttackBuffEffect>();
             //追加したコンポーネントの初期化処理
-            attackBuff.Init(unitBase, m_additiveAttack, boostDuration);
+            //付加攻撃力と継続時間を設定
+            attackBuff.Init(unitBase, m_additiveAttack, m_boostDuration);
 
         }
+    }
+
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, m_radius);
     }
 
 

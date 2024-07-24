@@ -29,27 +29,6 @@ public class Unit_Beholder : UnitBase
     }
 
     /// <summary>
-    /// スキル攻撃の魔法の詠唱。アニメーションイベントで呼ばれる
-    /// </summary>
-    /// <param name="SpellPrefab"></param>
-    public void CastSkillSpellEvent(GameObject SpellPrefab)
-    {
-        if (SpellPrefab == null) return;
-        //魔法発射地点からマジックボールを生成
-        GameObject spell = Instantiate(SpellPrefab, m_castPoint.position, m_castPoint.rotation);
-        MagicBall magicBall = spell.GetComponent<MagicBall>();
-
-        if (magicBall == null) return;
-
-        //マジックボール生成時の初期化処理
-        magicBall.Init(
-            GetCharacterController().GetTargetObject().transform.position,
-            GetCurrentAttackPower()
-            );
-    }
-
-
-    /// <summary>
     /// アニメーターのパラメータを設定
     /// </summary>
     protected override void SetAnimatorParameters()
@@ -57,12 +36,6 @@ public class Unit_Beholder : UnitBase
         m_animator.SetFloat("RunSpeed", GetCharacterController().GetWalkAnimationBlendSpeed());
 
         m_animator.SetBool("IsMove", GetCharacterController().GetIsMove());
-
-        if (m_skillAttackAction)
-        {
-            m_animator.SetTrigger("SkillAttack");
-            m_skillAttackAction = false;
-        }
 
         if (m_normalAttackAction)
         {

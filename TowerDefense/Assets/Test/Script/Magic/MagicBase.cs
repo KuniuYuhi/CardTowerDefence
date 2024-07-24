@@ -21,6 +21,7 @@ public class MagicBase : SpawnableBase
     {
         //オリジナルのデータからゲーム中に使うデータにコピー
         m_runtimeStatus = Instantiate(m_originalStatus);
+        m_runtimeStatus.Initialize();
     }
 
     // Start is called before the first frame update

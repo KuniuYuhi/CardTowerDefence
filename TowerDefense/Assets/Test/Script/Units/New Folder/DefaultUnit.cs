@@ -14,12 +14,6 @@ public class DefaultUnit : UnitBase
 
         m_animator.SetBool("IsMove", GetCharacterController().GetIsMove());
        
-        if (m_skillAttackAction)
-        {
-            m_animator.SetTrigger("SkillAttack");
-            m_skillAttackAction = false;
-        }
-
         if (m_normalAttackAction)
         {
             m_animator.SetTrigger("NormalAttack");

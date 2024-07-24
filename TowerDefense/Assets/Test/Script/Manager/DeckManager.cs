@@ -56,6 +56,11 @@ public class DeckManager : MonoBehaviour
     bool m_isSetUpHand = false;                 //手札のセットアップができたか
 
 
+    public enum EnDrawCardMethod
+    {
+        enDrawCardMethod_Movable,
+        enDrawCardMethod_Warp,
+    }
 
 
     public bool GetSetUpHandFlag()
@@ -141,12 +146,13 @@ public class DeckManager : MonoBehaviour
         //デッキの最大枚数を取得
         m_maxCardCount = m_deckCardList.Count;
 
-        //これは別でもいい
-        //ここをうまく管理して一枚ずつカードを引く
+
         //画面下に初期手札の数分カードを設置
-        DrawCardFromDeck(m_initialHandCount);
+        //移動不可能
+        //配置方法は移動型
+        DrawCardFromDeck(m_initialHandCount,true,EnDrawCardMethod.enDrawCardMethod_Movable);
 
-
+       
     }
 
 
@@ -187,7 +193,7 @@ public class DeckManager : MonoBehaviour
         {
             //消せた
             //手札のカードが一枚減ったので、デッキから一枚カードを引く
-            DrawCardFromDeck();
+            DrawCardFromDeck(1,true);
         }
         else
         {
@@ -251,8 +257,8 @@ public class DeckManager : MonoBehaviour
         m_cardDetail.gameObject.SetActive(m_isCardDetailActive);
 
         //最初のカードのセッティング
-        //StartDeckAndCardSetting();
-
+        StartDeckAndCardSetting();
+        
     }
 
     // Update is called once per frame
@@ -300,7 +306,7 @@ public class DeckManager : MonoBehaviour
             //山札に入るので、移動処理などができないようにする
             //生成したカードとデッキのカードのCardBaseコンポーネントを取得
             CardBase cardBase = graveyardCard.GetComponent<CardBase>();
-
+            //カードが移動できないようにする
             cardBase.GetCardDrager().SetMovableFlag(false);
 
             //墓地のカードをデッキリストに追加(戻していく)
@@ -315,16 +321,15 @@ public class DeckManager : MonoBehaviour
     /// <summary>
     /// デッキからカードを引いて手札に加える
     /// </summary>
-    /// <param name="drawAmount">カードを引く枚数。デフォルトは1枚</param>
-    public void DrawCardFromDeck(int drawAmount = 1)
+    /// <param name="drawAmount">ドローするカードの枚数</param>
+    /// <param name="movableFlag">カード移動可能フラグ</param>
+    /// <param name="drawCardMethod">カードをドローする際の方法</param>
+    public void DrawCardFromDeck(
+        int drawAmount = 1, 
+        bool movableFlag = false, 
+        EnDrawCardMethod drawCardMethod = EnDrawCardMethod.enDrawCardMethod_Warp)
     {
-        //デッキにカードが残ってなかったら墓地からカードをデッキに回収
-        if (m_deckCardList.Count == 0)
-        {
-            Debug.Log("墓地からカードを回収");
-            ReclaimCardFromGraveyard();
-        }
-
+        //
         for (int i = 0; i < drawAmount; i++)
         {
             if(m_deckCardList.Count== 0)
@@ -349,14 +354,14 @@ public class DeckManager : MonoBehaviour
         }
 
         //手札エリアにカードを配置
-        PlaceCardInHand();
+        PlaceCardInHand(drawCardMethod, movableFlag);
     }
 
 
     /// <summary>
     /// カードを手札エリアに配置する
     /// </summary>
-    async void PlaceCardInHand()
+    async void PlaceCardInHand(EnDrawCardMethod drawCardMethod,bool flag)
     {
         m_isSetUpHand = false;
 
@@ -370,27 +375,32 @@ public class DeckManager : MonoBehaviour
         {
             CardBase cardBase = card.GetComponent<CardBase>();
 
+            if(drawCardMethod==EnDrawCardMethod.enDrawCardMethod_Movable)
+            {
+                //カードを手札の定位置に移動させる
+                cardBase.GetCardDrager().MoveCard(new Vector2(subDistance - startPosX, 0.0f));
+                //一秒待ってループ再開
+                await Task.Delay(100);
+            }
+            else
+            {
+                //直接移動させるなら
+                cardBase.GetCardDrager().SetRectTransform(Vector2.zero);
+                cardBase.GetCardDrager().SumRectTransform(new Vector2(subDistance - startPosX, 0.0f));
+                //一秒待ってループ再開
+                await Task.Delay(50);
+            }
 
-            ///
-            //直接移動させるなら
-            //cardBase.GetCardDrager().SetRectTransform(Vector2.zero);
-            //cardBase.GetCardDrager().SumRectTransform(new Vector2(subDistance - startPosX, 0.0f));
-            ///
-
-            //カードを手札の定位置に移動させる
-            cardBase.GetCardDrager().MoveCard(new Vector2(subDistance - startPosX, 0.0f));
-          
             //手札での初期位置をカードの到達地点の座標に設定
             cardBase.GetCardDrager().ChangeHandPositionToNowPosition(new Vector2(subDistance - startPosX, 0.0f));
 
             //手札に入ったので、カードを動かせるようにする
-            cardBase.GetCardDrager().SetMovableFlag(true);
+            cardBase.GetCardDrager().SetMovableFlag(flag);
 
             //次のカードの距離にする
             subDistance += distance;
 
-            //一秒待ってループ再開
-            await Task.Delay(100);
+            
 
         }
 
@@ -398,6 +408,23 @@ public class DeckManager : MonoBehaviour
         m_isSetUpHand = true;
 
     }
+
+
+
+
+    /// <summary>
+    /// 手札のカードの移動可能フラグを設定
+    /// </summary>
+    /// <param name="flag"></param>
+    public void SetHandCardsMovableFlag(bool flag)
+    {
+        foreach (var card in m_handCardList)
+        {
+            CardBase cardBase = card.GetComponent<CardBase>();
+            cardBase.GetCardDrager().SetMovableFlag(flag);
+        }
+    }
+
 
 
 }
