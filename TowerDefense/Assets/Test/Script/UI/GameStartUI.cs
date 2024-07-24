@@ -10,6 +10,7 @@ public class GameStartUI : MonoBehaviour
     [SerializeField,Header("UIを表示させる時間")]
     float m_viewTimer = 1.5f;
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,19 +28,8 @@ public class GameStartUI : MonoBehaviour
 
         DeckOpen();
 
-        //while(true)
-        //{
-        //    if(DeckManager.instance.GetSetUpHandFlag())
-        //    {
-        //        //各UIをアクティブ化する
-        //        m_gameStartPanel.SetActive(true);
-        //        break;
-        //    }
-        //}
-
         //各UIをアクティブ化する
-        m_gameStartPanel.SetActive(true);
-
+        //m_gameStartPanel.SetActive(true);
 
         //コルーチン
         StartCoroutine(PanelViewTimer());
@@ -47,11 +37,31 @@ public class GameStartUI : MonoBehaviour
 
     IEnumerator PanelViewTimer()
     {
+        while (true)
+        {
+            if (DeckManager.instance.GetSetUpHandFlag())
+            {
+                break;
+            }
+
+            //ある程度待つ
+            yield return new WaitForSeconds(1.0f);
+        }
+
+        //ある程度待つ
+        yield return new WaitForSeconds(1.0f);
+
+        //各UIをアクティブ化する
+        m_gameStartPanel.SetActive(true);
+
         //ある程度待つ
         yield return new WaitForSeconds(m_viewTimer);
 
-        //ゲームマネージャーにシーンを切り替えてもいい合図を送る
+        //ゲームマネージャーにgameシーンを切り替えてもいい合図を送る
         GameManager.Instance.SetChangeSceneFlag(true);
+
+        //手札のカードを動かせるようにする
+        DeckManager.instance.SetHandCardsMovableFlag(true);
 
         //パネルを非アクティブ化する
         m_gameStartPanel.SetActive(false);
@@ -62,10 +72,6 @@ public class GameStartUI : MonoBehaviour
     {
         //デッキを画面にセット
         DeckManager.instance.StartDeckAndCardSetting();
-
-
-        //カードの配置が終わったらゲームスタートを表示する
-
     }
 
 }
